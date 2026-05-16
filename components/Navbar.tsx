@@ -1,0 +1,69 @@
+'use client';
+
+import Link from "next/link";
+import Image from "next/image";
+import { usePathname } from "next/navigation";
+import { useAuth, SignInButton, SignUpButton, useUser } from "@clerk/nextjs";
+import { User } from "lucide-react";
+
+const navItems = [
+    { label: "Library", href: "/" },
+    { label: "Add New", href: "/books/new" }
+];
+
+const Navbar = () => {
+    const pathName = usePathname();
+    const { isSignedIn, isLoaded } = useAuth();
+    const { user } = useUser();
+
+    const firstName = user?.firstName || "Account";
+
+    return (
+        <header className="w-full fixed z-50 bg-[--bg-primary]">
+            <div className="wrapper navbar-height py-4 flex justify-between items-center">
+                <Link href="/" className="flex gap-0.5 items-center">
+                    <Image src="/assets/logo.png" alt="Bookified" width={42} height={26} />
+                    <span className="logo-text">Bookified</span>
+                </Link>
+
+                <nav className="w-fit flex gap-7 items-center">
+                    {navItems.map(({ label, href }) => {
+                        const isActive =
+                            pathName === href ||
+                            (href !== "/" && pathName.startsWith(href));
+
+                        return (
+                            <Link
+                                href={href}
+                                key={label}
+                                className={`nav-link-base ${isActive ? 'nav-link-active' : 'text-black hover:opacity-70'}`}
+                            >
+                                {label}
+                            </Link>
+                        );
+                    })}
+
+                    {isLoaded && !isSignedIn && (
+                        <>
+                            <SignInButton />
+                            <SignUpButton />
+                        </>
+                    )}
+                    {isLoaded && isSignedIn && (
+                        <Link
+                            href="/subscription"
+                            id="nav-user-profile"
+                            className="nav-user-link"
+                            title="Manage subscription"
+                        >
+                            <User className="w-4 h-4 text-[var(--color-brand)]" />
+                            <span className="nav-user-name">{firstName}</span>
+                        </Link>
+                    )}
+                </nav>
+            </div>
+        </header>
+    );
+};
+
+export default Navbar;
