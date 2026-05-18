@@ -11,10 +11,13 @@ import { PLAN_LIMITS } from '@/lib/subscription-constants';
 export interface BookSegmentLean {
     _id: mongoose.Types.ObjectId | string;
     bookId: mongoose.Types.ObjectId | string;
+    clerkId?: string;
     content: string;
     segmentIndex: number;
     pageNumber: number;
     wordCount: number;
+    createdAt?: Date;
+    updatedAt?: Date;
 }
 
 export async function getAllBooks(query?: string) {
