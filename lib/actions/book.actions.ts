@@ -4,6 +4,21 @@ import Book from '@/database/models/book.model';
 import BookSegment from '@/database/models/book-segment.model';
 import { connectToDatabase } from '@/database/mongoose';
 import { escapeRegex, generateSlug, serializeData } from '@/lib/utils';
+import mongoose from 'mongoose';
+import { getUserPlan } from '@/lib/subscription.server';
+import { PLAN_LIMITS } from '@/lib/subscription-constants';
+
+interface BookSegmentLean {
+    _id: mongoose.Types.ObjectId;
+    bookId: mongoose.Types.ObjectId;
+    clerkId: string;
+    content: string;
+    segmentIndex: number;
+    pageNumber?: number;
+    wordCount: number;
+    createdAt: Date;
+    updatedAt: Date;
+}
 
 export async function getAllBooks(query?: string) {
     await connectToDatabase();
@@ -54,6 +69,20 @@ export const getBookBySlug = async (slug: string) => {
 
 export const createBook = async (data: any) => {
     await connectToDatabase();
+
+    // Plan limits check
+    const plan = await getUserPlan();
+    const limits = PLAN_LIMITS[plan];
+
+    const bookCount = await Book.countDocuments({ clerkId: data.clerkId });
+    if (bookCount >= limits.maxBooks) {
+        return {
+            success: false,
+            alreadyExists: false,
+            isBillingError: true,
+            error: `You have reached your plan limit of ${limits.maxBooks} book${limits.maxBooks > 1 ? 's' : ''}. Upgrade your plan under Subscriptions to upload more books!`
+        };
+    }
 
     const slug = generateSlug(data.title);
 
@@ -121,7 +150,7 @@ export const searchBookSegments = async (bookId: string, query: string, limit: n
         const bookObjectId = new mongoose.Types.ObjectId(bookId);
 
         // Try MongoDB text search first (requires text index)
-        let segments: Record<string, unknown>[] = [];
+        let segments: BookSegmentLean[] = [];
         try {
             segments = await BookSegment.find({
                 bookId: bookObjectId,

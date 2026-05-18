@@ -8,7 +8,8 @@ import { User } from "lucide-react";
 
 const navItems = [
     { label: "Library", href: "/" },
-    { label: "Add New", href: "/books/new" }
+    { label: "Add New", href: "/books/new" },
+    { label: "Pricing", href: "/subscriptions" }
 ];
 
 const Navbar = () => {
@@ -51,10 +52,10 @@ const Navbar = () => {
                     )}
                     {isLoaded && isSignedIn && (
                         <Link
-                            href="/subscription"
+                            href="/profile"
                             id="nav-user-profile"
                             className="nav-user-link"
-                            title="Manage subscription"
+                            title="Manage profile"
                         >
                             <User className="w-4 h-4 text-[var(--color-brand)]" />
                             <span className="nav-user-name">{firstName}</span>

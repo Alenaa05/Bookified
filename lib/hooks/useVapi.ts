@@ -90,6 +90,7 @@ export function useVapi(book: IBook) {
                         // Check duration limit
                         if (newDuration >= maxDurationRef.current) {
                             sdk.stop();
+                            setIsBillingError(true);
                             setLimitError(
                                 `Session time limit (${Math.floor(
                                     maxDurationRef.current / SECONDS_PER_MINUTE,
