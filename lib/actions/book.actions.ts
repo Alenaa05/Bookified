@@ -8,6 +8,18 @@ import mongoose from 'mongoose';
 import { getUserPlan } from '@/lib/subscription.server';
 import { PLAN_LIMITS } from '@/lib/subscription-constants';
 
+interface BookSegmentLean {
+    _id: mongoose.Types.ObjectId;
+    bookId: mongoose.Types.ObjectId;
+    clerkId: string;
+    content: string;
+    segmentIndex: number;
+    pageNumber?: number;
+    wordCount: number;
+    createdAt: Date;
+    updatedAt: Date;
+}
+
 export async function getAllBooks(query?: string) {
     await connectToDatabase();
 
@@ -138,7 +150,7 @@ export const searchBookSegments = async (bookId: string, query: string, limit: n
         const bookObjectId = new mongoose.Types.ObjectId(bookId);
 
         // Try MongoDB text search first (requires text index)
-        let segments: Record<string, any>[] = [];
+        let segments: BookSegmentLean[] = [];
         try {
             segments = await BookSegment.find({
                 bookId: bookObjectId,

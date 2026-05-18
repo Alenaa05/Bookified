@@ -10,7 +10,7 @@ export default function ProfileClient() {
 
     useEffect(() => {
         if (isLoaded && !isSignedIn) {
-            router.push("/sign-in");
+            router.replace("/sign-in");
         }
     }, [isLoaded, isSignedIn, router]);
 
@@ -34,7 +34,6 @@ export default function ProfileClient() {
                     appearance={{
                         variables: {
                             colorPrimary: "#212a3b",
-                            colorText: "#212a3b",
                             borderRadius: "0.75rem",
                             colorBackground: "#ffffff",
                         },

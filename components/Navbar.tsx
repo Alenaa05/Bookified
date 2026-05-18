@@ -55,7 +55,7 @@ const Navbar = () => {
                             href="/profile"
                             id="nav-user-profile"
                             className="nav-user-link"
-                            title="Manage subscription"
+                            title="Manage profile"
                         >
                             <User className="w-4 h-4 text-[var(--color-brand)]" />
                             <span className="nav-user-name">{firstName}</span>
