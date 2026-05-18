@@ -8,6 +8,15 @@ import mongoose from 'mongoose';
 import { getUserPlan } from '@/lib/subscription.server';
 import { PLAN_LIMITS } from '@/lib/subscription-constants';
 
+export interface BookSegmentLean {
+    _id: mongoose.Types.ObjectId | string;
+    bookId: mongoose.Types.ObjectId | string;
+    content: string;
+    segmentIndex: number;
+    pageNumber: number;
+    wordCount: number;
+}
+
 export async function getAllBooks(query?: string) {
     await connectToDatabase();
 
@@ -138,7 +147,7 @@ export const searchBookSegments = async (bookId: string, query: string, limit: n
         const bookObjectId = new mongoose.Types.ObjectId(bookId);
 
         // Try MongoDB text search first (requires text index)
-        let segments: Record<string, any>[] = [];
+        let segments: BookSegmentLean[] = [];
         try {
             segments = await BookSegment.find({
                 bookId: bookObjectId,
@@ -147,7 +156,7 @@ export const searchBookSegments = async (bookId: string, query: string, limit: n
                 .select('_id bookId content segmentIndex pageNumber wordCount')
                 .sort({ score: { $meta: 'textScore' } })
                 .limit(limit)
-                .lean();
+                .lean() as unknown as BookSegmentLean[];
         } catch {
             // Text index may not exist — fall through to regex fallback
             segments = [];
@@ -165,7 +174,7 @@ export const searchBookSegments = async (bookId: string, query: string, limit: n
                 .select('_id bookId content segmentIndex pageNumber wordCount')
                 .sort({ segmentIndex: 1 })
                 .limit(limit)
-                .lean();
+                .lean() as unknown as BookSegmentLean[];
         }
 
         console.log(`Search complete. Found ${segments.length} results`);

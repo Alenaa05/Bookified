@@ -10,7 +10,7 @@ export default function ProfileClient() {
 
     useEffect(() => {
         if (isLoaded && !isSignedIn) {
-            router.push("/sign-in");
+            router.replace("/sign-in");
         }
     }, [isLoaded, isSignedIn, router]);
 
