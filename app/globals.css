@@ -186,7 +186,7 @@
   }
 
   .input-reset {
-    @apply h-12 border-none lg: !text-lg shadow-none focus:outline-none focus-visible:ring-0;
+    @apply h-12 border-none lg:text-lg shadow-none focus:outline-none focus-visible:ring-0;
   }
 
   .label {
